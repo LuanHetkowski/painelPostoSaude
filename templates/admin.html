@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Administrativo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash-container">
+        {% for msg in messages %}
+          <div class="flash">✔️ {{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  
+  <div class="admin">
+    <h1>Administração do Painel</h1>
+
+    <!-- 1) Adicionar Paciente -->
+    <div class="section">
+      <h2>Adicionar Paciente</h2>
+      <form method="POST">
+        <input type="text" name="novo_paciente" placeholder="Nome do paciente" required>
+        <button type="submit" name="salvar_paciente">Adicionar</button>
+      </form>
+    </div>
+
+    <!-- 2) Chamar Próximo -->
+    <div class="section">
+      <h2>Pacientes na Fila</h2>    
+      <ul>
+        {% for p in pacientes %}
+          <li>{{ p.nome }}{% if p.sala %} - Sala {{ p.sala }}{% endif %}</li>
+        {% else %}
+          <li><em>Não há pacientes na fila.</em></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- 3) Avisos -->
+    <div class="section">
+      <h2>Avisos</h2>
+      <form method="POST">
+        <textarea name="avisos" placeholder="Um aviso por linha">{{ '\n'.join(avisos) }}</textarea><br>
+        <button type="submit" name="salvar_avisos">Salvar Avisos</button>
+      </form>
+    </div>
+    
+    <!-- 5) Imagens -->
+    <div class="section">
+      <h2>Imagens do Slideshow</h2>
+      <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="imagem" accept="image/*" required><br>
+        <button type="submit" name="salvar_imagem">Upload de Imagem</button>
+      </form>
+
+      <ul>
+        {% for img in imagens %}
+          <li>
+            {{ img }}
+            <a href="{{ url_for('delete_imagem', nome=img) }}">[x]</a>
+          </li>
+        {% else %}
+          <li><em>Não há imagens carregadas.</em></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

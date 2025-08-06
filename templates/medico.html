@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Médico</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script>
+    async function chamar() {
+      const sala = document.getElementById('sala-medico').value.trim();
+      if (!sala) {
+        alert('Informe a sala do médico!');
+        return;
+      }
+
+      const res = await fetch('/medico/chamar', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({ sala: sala })
+      });
+
+      const data = await res.json();
+      if (data.status === 'ok') {
+        document.getElementById('nome').innerText = `${data.proximo} - Sala ${data.sala}`;
+      } else if (data.status === 'empty') {
+        document.getElementById('nome').innerText = 'Fila vazia';
+      } else {
+        document.getElementById('nome').innerText = data.msg || 'Erro desconhecido';
+      }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('btn-chamar').addEventListener('click', chamar);
+    });
+  </script>
+</head>
+<body>
+  <div class="medico-panel">
+    <h1>Painel Médico</h1>
+    <label for="sala-medico">Sala do médico:</label><br>
+    <input type="text" id="sala-medico" name="sala-medico" placeholder="Ex: 101" required><br><br>
+    <button id="btn-chamar">Chamar Próximo Paciente</button>
+
+    <div id="nome" class="overlay-text" style="margin-top:20px; font-size:2em; color:#4caf50;">
+      — aguarde —
+    </div>
+  </div>
+</body>
+</html>
